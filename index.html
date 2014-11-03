@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>INGI2261 - Zombies</title>
+		<!-- The CSS stylesheet -->
+		<link rel="stylesheet" href="style.css">
+		<!-- Load the Paper.js library -->
+		<script type="text/javascript" src="js/paper-full.min.js"></script>
+		<!-- Load the Buckets.js library -->
+		<script type="text/javascript" src="js/buckets.min.js"></script>
+		<!-- Define inlined PaperScript associate it with myCanvas -->
+		<script type="text/paperscript" src="js/zombies.js" canvas="zombiesBoard" keepalive="true"></script>
+	</head>
+	<body>
+		<center>
+			<input type="file">
+			<canvas class="board" id="zombiesBoard" width="100%" height="100%" position="absolute" background="#d5d5d5" top="0" left="0">
+				Your browser don't support HTML5. Please use a HTML5 compatible browser.
+			</canvas>
+		</center>
+		<img id="empty_tile" style="visibility:hidden" src="images/empty_tile.png" width="0" height="0">
+		<img id="necromancer_tile_p1" style="visibility:hidden" src="images/necromancer_tile.png" width="0" height="0">
+		<img id="hugger_tile_p1" style="visibility:hidden" src="images/hugger_tile.png" width="0" height="0">
+		<img id="jumper_tile_p1" style="visibility:hidden" src="images/jumper_tile.png" width="0" height="0">
+		<img id="creeper_tile_p1" style="visibility:hidden" src="images/creeper_tile.png" width="0" height="0">
+		<img id="sprinter_tile_p1" style="visibility:hidden" src="images/sprinter_tile.png" width="0" height="0">
+		<img id="pause" style="visibility:hidden" src="images/pause.png" width="0" height="0">
+		<img id="play" style="visibility:hidden" src="images/play.png" width="0" height="0">
+		<img id="previous" style="visibility:hidden" src="images/previous.png" width="0" height="0">
+		<img id="next" style="visibility:hidden" src="images/next.png" width="0" height="0">
+		<img id="pause_disabled" style="visibility:hidden" src="images/pause_disabled.png" width="0" height="0">
+		<img id="play_disabled" style="visibility:hidden" src="images/play_disabled.png" width="0" height="0">
+		<img id="previous_disabled" style="visibility:hidden" src="images/previous_disabled.png" width="0" height="0">
+		<img id="next_disabled" style="visibility:hidden" src="images/next_disabled.png" width="0" height="0">
+		<img id="start" style="visibility:hidden" src="images/start.png" width="0" height="0">
+		<img id="ok" style="visibility:hidden" src="images/ok.png" width="0" height="0">
+		<img id="help_on" style="visibility:hidden" src="images/help_on.png" width="0" height="0">
+		<img id="help_off" style="visibility:hidden" src="images/help_off.png" width="0" height="0">
+	</body>
+</html>
