@@ -277,4 +277,4 @@ class WebViewer(Viewer):
 
   signal.signal(signal.SIGINT, close_sig_handler)
   signal.signal(signal.SIGTERM, close_sig_handler)
-  signal.signal(signal.SIGQUIT, close_sig_handler)
+  #signal.signal(signal.SIGQUIT, close_sig_handler)

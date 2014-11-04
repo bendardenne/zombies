@@ -25,7 +25,7 @@ class Agent: #(Agent, minimax.Game):
 
     def __init__(self, name="Basic Agent"):
         self.name = name
-        self.player = zombies.PLAYER2
+        self.player = zombies.PLAYER1
 
     """The successors function must return (or yield) a list of
     pairs (a, s) in which a is the action played to reach the
@@ -54,7 +54,7 @@ class Agent: #(Agent, minimax.Game):
     representing the utility function of the board.
     """
     def evaluate(self, state):
-        score = state[0].get_score()
+        score = state[0].get_score(self.player)
         if score > 0:
             return 1
         elif score < 0:
