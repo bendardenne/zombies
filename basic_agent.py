@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 """
 Zombies agent.
-Copyright (C) 2014, <<<<<<<<<<< YOUR NAMES HERE >>>>>>>>>>>
+Author: Nicolas Van Wallendael <nicolas.vanwallendael@student.uclouvain.be>
+        Benoit Dardenne <benoit.ardenne@student.uclouvain.be>
+Copyright (C) 2014, Université catholique de Louvain
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -45,7 +47,7 @@ class Agent: #(Agent, minimax.Game):
     search has to stop; false otherwise.
     """
     def cutoff(self, state, depth):
-        if depth > 2 or state[0].is_finished():
+        if depth >= 2 or state[0].is_finished():
             return True
 
         return False
