@@ -56,7 +56,7 @@ class Agent: #(Agent, minimax.Game):
     representing the utility function of the board.
     """
     def evaluate(self, state):
-        score = state[0].get_score(self.player)
+        return state[0].get_score(self.player)
         if score > 0:
             return 1
         elif score < 0:

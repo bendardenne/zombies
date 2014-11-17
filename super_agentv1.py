@@ -22,6 +22,7 @@ along with this program; if not, see <http://www.gnu.org/licenses/>.
 import zombies
 import minimax
 import random
+import math 
 
 class Agent: #(Agent, minimax.Game):
     """This is the skeleton of an agent to play the Zombies game."""
@@ -38,18 +39,34 @@ class Agent: #(Agent, minimax.Game):
     step number.
     """
     def successors(self, state):
-        b, p, st = state
+        board, player, step = state
+
+        CircleMyNecro = 0 
         
-        actions = b.get_actions(p, st)
+        if step <= 2 :
+            yield self.random_placement(zombies.HUGGER, state)
+                         
+        elif step <= 4:
+            yield self.random_placement(zombies.CREEPER, state)
+
+        elif step <= 6:
+            yield self.random_placement(zombies.JUMPER, state)
+
+
+        actions = board.get_actions(player, step)
+
+        for piece in board.pieces:
+            if (type(board.pieces[piece]) is int and board.pieces[piece] * self.player == zombies.NECROMANCER) or \
+                (type(board.pieces[piece]) is list and zombies.NECROMANCER * self.player in board.pieces[piece]):             #MyNecro
+                CircleMyNecro += len(board.get_non_empty_neighbours(piece))
         
         random.shuffle(actions)
         for a in actions:
-            newboard = b.clone()
-            newboard.play_action(a, p, st)
-            yield (a, (newboard, -p, st + 1))
-
-
-        #if type(self.pieces[former_pos]) is int:
+            if CircleMyNecro == 5 and a[0] != 'M' :
+                continue
+            newboard = board.clone()
+            newboard.play_action(a, player, step)
+            yield (a, (newboard, -player, step + 1))
 
     """The cutoff function returns true if the alpha-beta/minimax
     search has to stop; false otherwise.
@@ -64,37 +81,30 @@ class Agent: #(Agent, minimax.Game):
     representing the utility function of the board.
     """
     def evaluate(self, state):
-        
+
+        b, p, step = state
         CircleMyNecro = 0
-        CircleHisNecro = 0
-        FreeRynners = 0;
+        CircleHisNecro = 0         
         
-        if state[0].unplaced_pieces[zombies.NECROMANCER * self.player] == 0 and \
-            state[0].unplaced_pieces[zombies.NECROMANCER * -self.player] == 0:
-            for piece in state[0].pieces:
-                if (type(state[0].pieces[piece]) is int and state[0].pieces[piece] * self.player == zombies.NECROMANCER) or \
-                    (type(state[0].pieces[piece]) is list and zombies.NECROMANCER * self.player in state[0].pieces[piece]):             #MyNecro
-                    CircleMyNecro += len(state[0].get_non_empty_neighbours(piece))
-                elif (type(state[0].pieces[piece]) is int and state[0].pieces[piece] * -self.player == zombies.NECROMANCER) or \
-                    (type(state[0].pieces[piece]) is list and zombies.NECROMANCER * -self.player in state[0].pieces[piece]):             #HisNecro
-                    CircleHisNecro += len(state[0].get_non_empty_neighbours(piece))
-                elif (type(state[0].pieces[piece]) is int and state[0].pieces[piece] * -self.player == zombies.SPRINTER):             #MyRynners
-                    if(len(state[0].get_non_empty_neighbours(piece)) >= 2):
-                        FreeRynners +=1
-    
+        myNecroFree = 0
+        hisNecroFree = 0
+         
+        for piece in b.pieces:
+            if (type(b.pieces[piece]) is int and b.pieces[piece] * self.player == zombies.NECROMANCER) or \
+                (type(b.pieces[piece]) is list and zombies.NECROMANCER * self.player in b.pieces[piece]):             #MyNecro
+                myNecroFree = len(b.get_necromancer_moves(piece))
+                CircleMyNecro += len(b.get_non_empty_neighbours(piece))
+            elif (type(b.pieces[piece]) is int and b.pieces[piece] * -self.player == zombies.NECROMANCER) or \
+                (type(b.pieces[piece]) is list and zombies.NECROMANCER * -self.player in b.pieces[piece]):             #HisNecro
+                hisNecroFree = len(b.get_necromancer_moves(piece))
+                CircleHisNecro += len(b.get_non_empty_neighbours(piece))
+       
         
-        
-        #else:
-        #return -10
-        
-        
-
         if CircleHisNecro == 6:
-            print("C'est FINIIIIIIII COUILLON 88888888888888888")
-            return 20000
+            return 20000 - step
 
-        print("Score = " + str( -CircleMyNecro + CircleHisNecro ))
-        return -CircleMyNecro + CircleHisNecro #+ FreeRynners;
+        return -CircleMyNecro + CircleHisNecro #+ myNecroFree - hisNecroFree
+        
 
     def play(self, board, player, step, time_left):
         """This function is used to play a move according
@@ -107,6 +117,14 @@ class Agent: #(Agent, minimax.Game):
         state = (board, player, step)
         return minimax.search(state, self)
 
+    def random_placement(self, piece, state) :
+        board, player, step = state
+        pos = board.get_possible_placements(self.player, step) 
+        newboard = board.clone()
+        action = ('P', (piece * self.player, board.unplaced_pieces[piece * self.player]), \
+            random.choice(pos))
+        newboard.play_action(action, self.player, step)
+        return (action, (newboard, -player, step + 1))
 
 if __name__ == "__main__":
     zombies.agent_main(Basic_Agent())
