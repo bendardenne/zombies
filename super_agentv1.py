@@ -24,12 +24,17 @@ import minimax
 import random
 import math 
 
+ATTACK = 0
+DEFENSE = 1
+
 class Agent: #(Agent, minimax.Game):
     """This is the skeleton of an agent to play the Zombies game."""
 
     def __init__(self, name="Super Agent"):
         self.name = name
         self.player = zombies.PLAYER1
+        self.strategy = ATTACK
+        self.necromancers = {}
 
     """The successors function must return (or yield) a list of
     pairs (a, s) in which a is the action played to reach the
@@ -40,8 +45,6 @@ class Agent: #(Agent, minimax.Game):
     """
     def successors(self, state):
         board, player, step = state
-
-        CircleMyNecro = 0 
         
         if step <= 2 :
             yield self.random_placement(zombies.HUGGER, state)
@@ -54,16 +57,9 @@ class Agent: #(Agent, minimax.Game):
 
 
         actions = board.get_actions(player, step)
-
-        for piece in board.pieces:
-            if (type(board.pieces[piece]) is int and board.pieces[piece] * self.player == zombies.NECROMANCER) or \
-                (type(board.pieces[piece]) is list and zombies.NECROMANCER * self.player in board.pieces[piece]):             #MyNecro
-                CircleMyNecro += len(board.get_non_empty_neighbours(piece))
         
         random.shuffle(actions)
         for a in actions:
-            if CircleMyNecro == 5 and a[0] != 'M' :
-                continue
             newboard = board.clone()
             newboard.play_action(a, player, step)
             yield (a, (newboard, -player, step + 1))
@@ -83,39 +79,45 @@ class Agent: #(Agent, minimax.Game):
     def evaluate(self, state):
 
         b, p, step = state
-        CircleMyNecro = 0
-        CircleHisNecro = 0         
         
-        myNecroFree = 0
-        hisNecroFree = 0
-         
-        for piece in b.pieces:
-            if (type(b.pieces[piece]) is int and b.pieces[piece] * self.player == zombies.NECROMANCER) or \
-                (type(b.pieces[piece]) is list and zombies.NECROMANCER * self.player in b.pieces[piece]):             #MyNecro
-                myNecroFree = len(b.get_necromancer_moves(piece))
-                CircleMyNecro += len(b.get_non_empty_neighbours(piece))
-            elif (type(b.pieces[piece]) is int and b.pieces[piece] * -self.player == zombies.NECROMANCER) or \
-                (type(b.pieces[piece]) is list and zombies.NECROMANCER * -self.player in b.pieces[piece]):             #HisNecro
-                hisNecroFree = len(b.get_necromancer_moves(piece))
-                CircleHisNecro += len(b.get_non_empty_neighbours(piece))
-       
-        
+        """ 
         if CircleHisNecro == 6:
             return 20000 - step
-
-        return -CircleMyNecro + CircleHisNecro #+ myNecroFree - hisNecroFree
+        """
+        return b.get_score() #  -CircleMyNecro + CircleHisNecro #+ myNecroFree - hisNecroFree
         
 
     def play(self, board, player, step, time_left):
-        """This function is used to play a move according
-        to the board, player and time left provided as input.
-        It must return an action representing the move the player
-        will perform.
-        """
         self.player = player
         self.time_left = time_left
+
+        if step > 8 and self.is_necromancer_in_danger(board): 
+            self.strategy = DEFENSE
+
         state = (board, player, step)
         return minimax.search(state, self)
+
+    def is_necromancer_in_danger(self, board):
+        self.update_necromancer(board)
+        myNecro = len(board.get_non_empty_neighbours(self.necromancers[self.player]))
+        hisNecro = len(board.get_non_empty_neighbours(self.necromancers[-self.player]))
+
+        if myNecro >= 4 and hisNecro < 5:
+            return True
+
+        return False
+        
+
+    def update_necromancer(self, board):
+
+        for piece in board.pieces:
+            if (type(board.pieces[piece]) is int and board.pieces[piece] * self.player == zombies.NECROMANCER) or \
+                (type(board.pieces[piece]) is list and zombies.NECROMANCER * self.player in board.pieces[piece]):
+                self.necromancers[self.player] = piece
+            elif (type(board.pieces[piece]) is int and board.pieces[piece] * -self.player == zombies.NECROMANCER) or \
+                (type(board.pieces[piece]) is list and zombies.NECROMANCER * -self.player in board.pieces[piece]):
+                self.necromancers[-self.player] = piece
+        
 
     def random_placement(self, piece, state) :
         board, player, step = state
