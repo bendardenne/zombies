@@ -307,7 +307,7 @@ class Game:
         except Exception as e:
             logging.error("Player %d was unable to play step %d." +
                           " Reason: %s", agent + 1, self.step, e)
-            raise InvalidAction
+            raise e
         end = time.time()
         t = end - start
         logging.info("Step %d: received result %s in %fs",

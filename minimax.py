@@ -85,5 +85,5 @@ def search(state, game, prune=True):
                     beta = min(beta, v)
         return val, action
 
-    _, action = max_value(state, -inf, inf, 0)
+    val, action = max_value(state, -inf, inf, 0)
     return action
