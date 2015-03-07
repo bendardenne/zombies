@@ -24,8 +24,7 @@ import minimax
 import random
 import math 
 
-ATTACK = 0
-DEFENSE = 1
+Inf = float("inf")
 
 class Agent: #(Agent, minimax.Game):
     """This is the skeleton of an agent to play the Zombies game."""
@@ -33,7 +32,6 @@ class Agent: #(Agent, minimax.Game):
     def __init__(self, name="Super Agent"):
         self.name = name
         self.player = zombies.PLAYER1
-        self.strategy = ATTACK
         self.positions = {}
 
     """The successors function must return (or yield) a list of
@@ -126,18 +124,19 @@ class Agent: #(Agent, minimax.Game):
                         sumDistance += dist
                 if totalPieces != 0 : sumDistance /= totalPieces
         
+        
+        if circleHisNecro == 6:
+            return Inf
 
+        if circleMyNecro == 6:
+            return -Inf
+        
         if circleHisNecro == 5:
             tiles = b.get_neighbouring_tiles(self.positions[-self.player * zombies.NECROMANCER][0])
             empty = [x for x in tiles if b.pieces[x] == zombies.EMPTY][0]
             tiles = b.get_neighbouring_tiles(empty)
             emptyAccessible = len([x for x in tiles if x in b.pieces and b.pieces[x] == zombies.EMPTY])
        
-        if circleHisNecro == 6:
-            return 99999999999
-
-        if circleMyNecro == 6:
-            return -99999999999999999
 
         return ( -8*circleMyNecro + 20*circleHisNecro - 2.5*sumDistance - 15 * hisFreeNecro +  10 * emptyAccessible + huggerOn * 18 +  2 * totalPieces  + 12 * creeperReachable ) #+ 12 * jumperReachable)
         
@@ -146,11 +145,6 @@ class Agent: #(Agent, minimax.Game):
         self.player = player
         self.time_left = time_left
         
-        if step > 8 and self.is_necromancer_in_danger(board): 
-            self.strategy = DEFENSE
-        else:
-            self.strategy = ATTACK
-
         state = (board, player, step)
         return minimax.search(state, self)
 
